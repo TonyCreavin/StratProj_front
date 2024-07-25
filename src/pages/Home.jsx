@@ -68,13 +68,13 @@ const Home = () => {
       console.error('Error adding task:', error);
     }
   };
-
   const deleteTask = async (taskId) => {
     try {
       await axios.delete(`http://localhost:3000/api/v1/tasks/${taskId}`);
-      setTasks((prevTasks) =>
-        prevTasks.data.filter((task) => task.id !== taskId)
-      );
+      setTasks((prevTasks) => ({
+        ...prevTasks,
+        data: prevTasks.data.filter((task) => task.id !== taskId),
+      }));
     } catch (error) {
       console.error('Error deleting task:', error);
     }
