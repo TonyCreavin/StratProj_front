@@ -1,7 +1,50 @@
-html,
-body,
-#root,
-#root div:only-child,
+/* Ensure the Gantt container has a fixed height and allows scrolling if needed */
 .gantt-container {
-  height: 100%;
+  width: 100%;
+  height: calc(
+    100vh - 150px
+  ); /* Adjust based on the height of other elements */
+  position: relative;
+  overflow: auto; /* Allow scrolling if content overflows */
+}
+
+/* Style for delete button */
+.delete-btn {
+  background-color: #e57373; /* Light red background */
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+}
+.update-btn {
+  background-color: rgb(48, 105, 243); /* Light red background */
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Style for the Gantt chart's table to handle overflow and ensure fixed column widths */
+.dhx_gantt_task_line {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Style to prevent columns from overlapping */
+.dhx_gantt_task_cell {
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis if text overflows */
+  white-space: nowrap;
+}
+
+/* Style to ensure the Gantt table does not overlap with buttons */
+.dhx_gantt_task_line,
+.dhx_gantt_task_cell {
+  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
 }
