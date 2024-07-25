@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -17,11 +19,10 @@ function Login() {
       // Handle success (e.g., redirect to dashboard)
 
       const token = response.data.token;
-      localStorage.setItem('token', token);
-      return navigate('/');
+      login(token); // Use login function from AuthContext
+      navigate('/');
     } catch (err) {
       console.error('Login failed:', err);
-      //setError('Login failed. Please try again.');
     }
   };
   return (

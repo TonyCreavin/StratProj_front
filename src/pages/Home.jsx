@@ -1,12 +1,13 @@
-import { useNavigate } from 'react-router-dom';
 import Gantt from '../components/Gantt';
 import { IoLogOutOutline } from 'react-icons/io5';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import { useAuth } from '../context/authContext';
 
 const Home = () => {
-  const navigate = useNavigate();
+  const { logout } = useAuth();
+
   const [tasks, setTasks] = useState({ data: [], links: [] });
   const [taskName, setTaskName] = useState('');
 
@@ -40,7 +41,7 @@ const Home = () => {
   }, []);
 
   const handleLogout = () => {
-    navigate('/logout');
+    logout();
   };
 
   const deleteTask = async (taskId) => {
