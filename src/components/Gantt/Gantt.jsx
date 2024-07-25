@@ -3,13 +3,21 @@ import PropTypes from 'prop-types';
 import gantt from 'dhtmlx-gantt';
 import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 import './Gantt.css';
+import dayjs from 'dayjs';
 
 const Gantt = ({ tasks, onDataChange }) => {
   const ganttContainer = useRef(null);
 
-  useEffect(() => {
-    console.log('Gantt tasks:', tasks); // Log the tasks passed to Gantt
-    gantt.config.date_format = '%Y-%m-%d %H:%i';
+  const initGantt = () => {
+    gantt.init(ganttContainer.current);
+
+    const formattedTasks = tasks.data.map((task) => ({
+      ...task,
+      start_date: dayjs(task.start_date).format('DD-MM-YYYY'),
+    }));
+
+    console.log('Formatted tasks:', formattedTasks); // Debugging
+    gantt.parse({ data: formattedTasks });
     gantt.config.editable = true; // Enable editing
     gantt.config.columns = [
       { name: 'name', label: 'Task name', width: 200 },
@@ -17,17 +25,32 @@ const Gantt = ({ tasks, onDataChange }) => {
       { name: 'duration', label: 'Duration', align: 'center' },
       { name: 'progress', label: 'Progress', width: 44 },
     ];
-    gantt.init(ganttContainer.current);
-    gantt.parse(tasks);
+    gantt.createDataProcessor((entity, action, data, id) => {
+      gantt.message(`${entity} ${action}`); // Display a message for each action
+      console.log(
+        `Entity: ${entity}, Action: ${action}, Data:`,
+        data,
+        `ID: ${id}`
+      );
+      // Call onDataChange to propagate changes to the parent component
+      if (onDataChange) {
+        onDataChange(gantt.serialize());
+      }
+    });
 
     // Notify parent about data changes
     gantt.attachEvent('onAfterTaskAdd', () => notifyDataChange());
     gantt.attachEvent('onAfterTaskUpdate', () => notifyDataChange());
     gantt.attachEvent('onAfterTaskDelete', () => notifyDataChange());
+  };
 
-    return () => {
-      gantt.clearAll();
-    };
+  useEffect(() => {
+    if (tasks.data.length > 0) {
+      initGantt();
+      return () => {
+        gantt.clearAll();
+      };
+    }
   }, [tasks]);
 
   const notifyDataChange = () => {
@@ -44,7 +67,18 @@ const Gantt = ({ tasks, onDataChange }) => {
 };
 
 Gantt.propTypes = {
-  tasks: PropTypes.object.isRequired, // Changed to object to align with Gantt data structure
+  tasks: PropTypes.shape({
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        start_date: PropTypes.string,
+        duration: PropTypes.number,
+        progress: PropTypes.number,
+      })
+    ).isRequired,
+    links: PropTypes.array, // Adjust if you have specific requirements for links
+  }).isRequired,
   onDataChange: PropTypes.func,
 };
 
