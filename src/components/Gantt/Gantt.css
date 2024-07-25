@@ -8,7 +8,6 @@
   overflow: auto; /* Allow scrolling if content overflows */
 }
 
-/* Style for delete button */
 .delete-btn {
   background-color: #e57373; /* Light red background */
   border: none;
