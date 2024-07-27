@@ -5,43 +5,88 @@ import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 import './Gantt.css';
 import dayjs from 'dayjs';
 
-const Gantt = ({ tasks, onDataChange, onDelete, onUpdate }) => {
+const Gantt = ({ tasks, onDataChange, onEditTask, onDeleteTask, onUpdate }) => {
   const ganttContainer = useRef(null);
 
   const initGantt = () => {
+    gantt.config.editable = false; // Enable editing
     gantt.init(ganttContainer.current);
 
-    const formattedTasks = tasks.data.map((task) => ({
-      ...task,
-      start_date: dayjs(task.start_date).format('DD-MM-YYYY'),
-      end_date: dayjs(task.start_date)
-        .add(task.duration, 'day')
-        .format('DD-MM-YYYY'),
-    }));
+    // const formattedTasks = tasks.data.map((task) => ({
+    //   ...task,
+    //   start_date: dayjs(task.start_date).format('DD-MM-YYYY'),
+    //   end_date: dayjs(task.start_date)
+    //     .add(task.duration, 'day')
+    //     .format('DD-MM-YYYY'),
+    //   log: console.log('task start_date', task.start_date),
+    // }));
+
+    // console.log('Formatted tasks:', formattedTasks); // Debugging
+    // gantt.parse({ data: formattedTasks });
+
+    const formattedTasks = tasks.data.map((task) => {
+      const parsedStartDate = dayjs(task.start_date);
+      const start_date = parsedStartDate.isValid()
+        ? parsedStartDate.format('DD-MM-YYYY')
+        : 'Invalid Date';
+      const end_date = parsedStartDate.isValid()
+        ? parsedStartDate.add(task.duration, 'day').format('DD-MM-YYYY')
+        : 'Invalid Date';
+
+      console.log('task start_date', task.start_date);
+
+      return {
+        ...task,
+        start_date,
+        end_date,
+      };
+    });
 
     console.log('Formatted tasks:', formattedTasks); // Debugging
     gantt.parse({ data: formattedTasks });
 
-    gantt.config.editable = true; // Enable editing
+    // Set custom task content template
+    gantt.templates.task_text = (start, end, task) => {
+      const progress =
+        typeof task.progress === 'number' &&
+        !isNaN(task.progress) &&
+        task.progress >= 0 &&
+        task.progress <= 1
+          ? Math.round(task.progress * 100) // Convert progress to percentage
+          : 0; // Default to 0% if undefined or invalid
+
+      return `
+        <div>
+
+          <div> ${progress}%</div>
+        </div>
+      `;
+    };
+
     gantt.config.columns = [
-      { name: 'name', label: 'Task name', width: 200 },
+      { name: 'name', label: 'Task name', width: 100 },
       { name: 'start_date', label: 'Start time', align: 'center', width: 100 },
-      { name: 'duration', label: 'Duration', align: 'center', width: 44 },
-      { name: 'progress', label: 'Progress', width: 44 },
+      { name: 'duration', label: 'Duration', align: 'center', width: 60 },
+      { name: 'progress', label: 'Progress', width: 60 },
       {
-        name: 'buttons',
-        label: '',
-        width: 1000,
-        template: (task) => {
-          return `
-          
-            <button class="update-btn" data-id="${task.id}">Update</button>
-            <button class="delete-btn" data-id="${task.id}">Delete</button>
-            
-          `;
-        },
+        name: 'delete',
+        label: 'Delete',
+        width: 200,
+        template: (task) =>
+          `<button class="delete-btn" data-id="${task.id}">Delete</button>`,
       },
     ];
+
+    gantt.attachEvent('onTaskClick', (id) => {
+      const task = gantt.getTask(id);
+      onEditTask(task);
+      return false;
+    });
+
+    gantt.attachEvent('onAfterTaskUpdate', (id, task) => {
+      onUpdate(id, task);
+      notifyDataChange(); // Notify about data changes after update
+    });
 
     gantt.createDataProcessor((entity, action, data, id) => {
       gantt.message(`${entity} ${action}`); // Display a message for each action
@@ -50,27 +95,27 @@ const Gantt = ({ tasks, onDataChange, onDelete, onUpdate }) => {
         data,
         `ID: ${id}`
       );
+
+      if (action === 'update') {
+        onUpdate(id, data);
+      }
+
       if (onDataChange) {
         onDataChange(gantt.serialize());
       }
-    });
-    ganttContainer.current.addEventListener('click', (e) => {
-      if (e.target.classList.contains('delete-btn')) {
-        const taskId = e.target.getAttribute('data-id');
-        onDelete(taskId);
-      }
 
-      if (e.target.classList.contains('update-btn')) {
-        const taskId = e.target.getAttribute('data-id');
-        const task = gantt.getTask(taskId);
-        onUpdate(taskId, task);
-      }
+      return Promise.resolve();
     });
 
     // Notify parent about data changes
-    gantt.attachEvent('onAfterTaskAdd', () => notifyDataChange());
-    gantt.attachEvent('onAfterTaskUpdate', () => notifyDataChange());
-    gantt.attachEvent('onAfterTaskDelete', () => notifyDataChange());
+    gantt.attachEvent('onAfterTaskAdd', notifyDataChange);
+    gantt.attachEvent('onAfterTaskUpdate', notifyDataChange);
+    gantt.attachEvent('onAfterTaskDelete', (id) => {
+      onDeleteTask(id);
+      notifyDataChange();
+    });
+
+    document.addEventListener('click', handleDeleteButtonClick);
   };
 
   useEffect(() => {
@@ -78,6 +123,7 @@ const Gantt = ({ tasks, onDataChange, onDelete, onUpdate }) => {
       initGantt();
       return () => {
         gantt.clearAll();
+        document.removeEventListener('click', handleDeleteButtonClick);
       };
     }
   }, [tasks]);
@@ -90,6 +136,13 @@ const Gantt = ({ tasks, onDataChange, onDelete, onUpdate }) => {
     }
   };
 
+  const handleDeleteButtonClick = (event) => {
+    if (event.target.classList.contains('delete-btn')) {
+      const taskId = event.target.getAttribute('data-id');
+      onDeleteTask(taskId);
+    }
+  };
+
   return (
     <div ref={ganttContainer} style={{ width: '100%', height: '100%' }}></div>
   );
@@ -99,17 +152,18 @@ Gantt.propTypes = {
   tasks: PropTypes.shape({
     data: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        start_date: PropTypes.string.isRequired,
-        duration: PropTypes.number.isRequired,
-        progress: PropTypes.number.isRequired,
+        id: PropTypes.string,
+        name: PropTypes.string,
+        start_date: PropTypes.string,
+        duration: PropTypes.number,
+        progress: PropTypes.number,
       })
     ).isRequired,
     links: PropTypes.array, // Adjust if you have specific requirements for links
   }).isRequired,
-  onDataChange: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onDataChange: PropTypes.func,
+  onEditTask: PropTypes.func.isRequired,
+  onDeleteTask: PropTypes.func.isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 
