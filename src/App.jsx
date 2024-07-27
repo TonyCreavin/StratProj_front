@@ -5,13 +5,26 @@ import Login from './pages/Login';
 import Logout from './pages/Logout';
 import { AuthProvider } from './context/authContext';
 import ProtectedRoute from './context/protectedRoute';
+import Profile from './pages/Profile';
 
 import './App.css';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
   },
   { path: '/register', element: <Register /> },
   { path: '/login', element: <Login /> },

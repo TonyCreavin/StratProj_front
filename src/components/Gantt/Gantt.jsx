@@ -73,7 +73,7 @@ const Gantt = ({ tasks, onDataChange, onEditTask, onDeleteTask, onUpdate }) => {
         label: 'Delete',
         width: 200,
         template: (task) =>
-          `<button class="delete-btn" data-id="${task.id}">Delete</button>`,
+          `<button class="delete-btn" data-id="${task.id}" >Delete</button>`,
       },
     ];
 

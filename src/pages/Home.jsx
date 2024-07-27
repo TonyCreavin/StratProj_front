@@ -4,8 +4,11 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import Gantt from '../components/Gantt';
 import { IoLogOutOutline } from 'react-icons/io5';
+import { useAuth } from '../context/authContext';
+import { CgProfile } from 'react-icons/cg';
 
 const Home = () => {
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState({ data: [], links: [] });
   const [taskName, setTaskName] = useState('');
@@ -19,26 +22,30 @@ const Home = () => {
   const [linkTarget, setLinkTarget] = useState('');
 
   const getTasks = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/api/v1/tasks');
-      const formattedTasks = {
-        data: response.data.data.tasks.map((task) => ({
-          id: task._id,
-          name: task.name,
-          start_date: dayjs(task.start_date).format('YYYY-MM-DD HH:mm'),
-          // end_date: dayjs(task.start_date)
-          //   .add(task.duration, 'day')
-          //   .format('YYYY-MM-DD HH:mm'),
+    if (isAuthenticated) {
+      try {
+        const response = await axios.get('http://localhost:3000/api/v1/tasks');
+        const formattedTasks = {
+          data: response.data.data.tasks.map((task) => ({
+            id: task._id,
+            name: task.name,
+            start_date: dayjs(task.start_date).format('YYYY-MM-DD HH:mm'),
+            // end_date: dayjs(task.start_date)
+            //   .add(task.duration, 'day')
+            //   .format('YYYY-MM-DD HH:mm'),
 
-          duration: task.duration,
-          progress: task.progress,
-        })),
-        links: response.data.data.links || [],
-      };
+            duration: task.duration,
+            progress: task.progress,
+          })),
+          links: response.data.data.links || [],
+        };
 
-      setTasks(formattedTasks);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
+        setTasks(formattedTasks);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    } else {
+      navigate('/login');
     }
   };
 
@@ -169,20 +176,37 @@ const Home = () => {
   };
 
   const handleLogout = () => {
+    logout();
     navigate('/logout');
+  };
+  const handleProfile = () => {
+    navigate('/profile');
   };
 
   return (
     <>
-      <nav className="w-full h-16 bg-[rgb(80,154,177)]">
-        <ul className="flex justify-end">
-          <li className="pr-5">
-            <button onClick={handleLogout}>
-              <IoLogOutOutline size={40} color="white" />
-            </button>
-            <p className="text-white text-xs">Logout</p>
-          </li>
-        </ul>
+      <nav className="w-full h-16 bg-[rgb(80,154,177)] flex justify-content py-1">
+        <div className="flex-1">
+          <h1 className="text-white text-4xl text-center pl-24 font-concert">
+            Gantt Chart
+          </h1>
+        </div>{' '}
+        <div className="flex justify-between">
+          <ul className="flex justify-end">
+            <li className="pr-5">
+              <button onClick={handleProfile}>
+                <CgProfile size={40} color="white " />
+              </button>
+              <p className="text-white text-xs">Profile</p>
+            </li>
+            <li className="pr-5">
+              <button onClick={handleLogout}>
+                <IoLogOutOutline size={40} color="white" />
+              </button>
+              <p className="text-white text-xs">Logout</p>
+            </li>
+          </ul>
+        </div>
       </nav>
 
       <div className="task-input">
@@ -211,9 +235,19 @@ const Home = () => {
           onChange={(e) => setTaskProgress(Number(e.target.value))}
           placeholder="Progress (0-1)"
         />
-        <button onClick={addTask}>Add Task</button>
+        <button
+          onClick={addTask}
+          className="m-4 text-white bg-blue-700 hover:bg-blue-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-indie font-bold text-xl rounded-lg w-50  px-5 py-2.5 text-center h-10 mb-3"
+        >
+          Add Task
+        </button>
         {editingTaskId && (
-          <button onClick={handleUpdateTask}>Update Task</button>
+          <button
+            onClick={handleUpdateTask}
+            className="m-4 text-white bg-blue-700 hover:bg-blue-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-indie font-bold text-xl rounded-lg w-50  px-5 py-2.5 text-center h-10 mb-3"
+          >
+            Update Task
+          </button>
         )}
       </div>
 
