@@ -22,7 +22,7 @@ function Login() {
       const userId = response.data.data.user._id;
       console.log('userId from login response:', userId);
       localStorage.setItem('userId', userId);
-      localStorage.setItem('token', token);
+      //localStorage.setItem('token', token);
       login(token); // Use login function from AuthContext
       navigate('/');
     } catch (err) {

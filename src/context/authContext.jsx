@@ -7,11 +7,13 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     console.log('AuthProvider: Loaded token from localStorage:', token);
     setIsAuthenticated(!!token); // Set authenticated if token exists
+    setLoading(false);
   }, []);
 
   const login = (token) => {
@@ -26,6 +28,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
   };
 
+  if (loading) {
+    return <div>Loading...</div>; // Or some other loading indicator
+  }
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       {children}

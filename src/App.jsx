@@ -6,6 +6,7 @@ import Logout from './pages/Logout';
 import { AuthProvider } from './context/authContext';
 import ProtectedRoute from './context/protectedRoute';
 import Profile from './pages/Profile';
+import './axiosConfig';
 
 import './App.css';
 
