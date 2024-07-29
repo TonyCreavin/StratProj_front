@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoLogOutOutline } from 'react-icons/io5';
 import { IoHomeOutline } from 'react-icons/io5';
-
+import Form from '../components/ProfileForm';
 import { useAuth } from '../context/authContext';
 import axios from 'axios';
 const Profile = () => {
@@ -131,116 +131,12 @@ const Profile = () => {
       <h1 className="font-indie font-bold text-3xl m-3">
         Hello {formData.name}
       </h1>
-      <form method="post" onSubmit={handleSubmit} className="mx-10">
-        <div className="relative z-0 mb-6 w-full mt-5">
-          <label
-            htmlFor="street"
-            className="block mb-2   text-gray-900 dark:text-white font-indie font-bold text-xl"
-          >
-            Street
-          </label>
-          <input
-            type="text"
-            id="street"
-            name="street"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="1234 Elm St."
-            value={formData.street || ''}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="city"
-            className="block mb-2   text-gray-900 dark:text-white font-indie font-bold text-xl"
-          >
-            City
-          </label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="john.doe@company.com"
-            value={formData.city || ''}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-6">
-          <label
-            htmlFor="postcode"
-            className="block mb-2   text-gray-900 dark:text-white font-indie font-bold text-xl"
-          >
-            Postcode
-          </label>
-          <input
-            type="text"
-            id="postcode"
-            name="postcode"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="56789"
-            value={formData.postcode || ''}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="country"
-            className="block mb-2   text-gray-900 dark:text-white font-indie font-bold text-xl"
-          >
-            Country
-          </label>
-          <input
-            type="text"
-            id="country"
-            name="country"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="•••••••••"
-            value={formData.country || ''}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="mb-6">
-          <label
-            htmlFor="phone"
-            className="block mb-2   text-gray-900 dark:text-white font-indie font-bold text-xl"
-          >
-            Phone number
-          </label>
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="•••••••••"
-            value={formData.phone || ''}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="flex-auto lg:space-x-10">
-          <button
-            type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-indie font-bold text-xl rounded-lg  w-full  px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mb-3"
-          >
-            Submit
-          </button>
-        </div>
-        <div className="flex-auto lg:space-x-10">
-          <button
-            type="button"
-            className="text-white bg-red-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-indie font-bold text-xl rounded-lg w-full  px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mb-3"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
-        </div>
-      </form>
+      <Form
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+        handleDelete={handleDelete}
+        formData={formData}
+      />
     </>
   );
 };
