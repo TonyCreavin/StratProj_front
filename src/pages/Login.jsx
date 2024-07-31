@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 import Form from '../components/LoginForm';
 
-function Login() {
+const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const handleSubmit = async (event) => {
@@ -38,6 +38,6 @@ function Login() {
       <Form handleSubmit={handleSubmit} navigate={navigate} />
     </>
   );
-}
+};
 
 export default Login;

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useFormTable } from '../pages/FormTable';
 import FormInput from '../hooks/useInputs';
 
-function LoginForm({ handleSubmit, navigate }) {
+const LoginForm = ({ handleSubmit, navigate }) => {
   const { loginInputs } = useFormTable();
 
   return (
@@ -40,7 +40,7 @@ function LoginForm({ handleSubmit, navigate }) {
       </div>
     </form>
   );
-}
+};
 LoginForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,

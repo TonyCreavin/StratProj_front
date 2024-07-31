@@ -3,7 +3,7 @@ import Form from '../components/RegistrationForm';
 import axios from 'axios';
 import { useState } from 'react';
 
-function Register() {
+const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -60,6 +60,6 @@ function Register() {
       />
     </>
   );
-}
+};
 
 export default Register;

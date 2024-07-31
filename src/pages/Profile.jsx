@@ -64,7 +64,6 @@ const Profile = () => {
         }
       );
       console.log('Profile updated successfully');
-      navigate('/');
     } catch (error) {
       console.error('Error updating profile:', error);
     }
@@ -72,6 +71,10 @@ const Profile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'phone' && isNaN(value)) {
+      alert('Phone number must be a number');
+    }
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
