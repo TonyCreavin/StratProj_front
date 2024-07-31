@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import useInputs from '../hooks/useInputs';
 
-function Form({ formData, handleChange, handleDelete, handleSubmit }) {
+const Form = ({ formData, handleChange, handleDelete, handleSubmit }) => {
   const streetInput = useInputs({
     id: 'street',
     name: 'street',
@@ -46,7 +46,7 @@ function Form({ formData, handleChange, handleDelete, handleSubmit }) {
     name: 'phone',
     type: 'text',
     label: 'Phone',
-    placeholder: '',
+    placeholder: 123345678,
     value: formData.phone,
     onChange: handleChange,
   });
@@ -81,7 +81,7 @@ function Form({ formData, handleChange, handleDelete, handleSubmit }) {
       </div>
     </form>
   );
-}
+};
 
 Form.propTypes = {
   formData: PropTypes.object.isRequired,

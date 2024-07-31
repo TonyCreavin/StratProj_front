@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import { FormInput } from '../hooks/useInputs';
 import { useFormTable } from '../pages/FormTable';
 
-function RegistrationForm({
+const RegistrationForm = ({
   handleReturn,
   handleChange,
   handleSubmit,
   formData,
-}) {
+}) => {
   const { registerInputs } = useFormTable(handleChange, formData);
 
   return (
@@ -65,7 +65,7 @@ function RegistrationForm({
       </form>
     </div>
   );
-}
+};
 RegistrationForm.propTypes = {
   handleChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,

@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FrappeGantt } from 'frappe-gantt-react';
 
+import GanttAddTask from '../GanttAddTask';
+import GanttTaskList from '../GanttTaskList';
+
 const Frappe = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({
@@ -44,6 +47,10 @@ const Frappe = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'progress' && (value < 0 || value > 100)) {
+      alert('Progress must be between 0 and 100');
+      return;
+    }
     const newValue = name === 'progress' ? Number(value) : value;
     setNewTask((prevState) => ({
       ...prevState,
@@ -153,129 +160,20 @@ const Frappe = () => {
         onDateChange={(task, start, end) => console.log(task, start, end)}
         onTasksChange={(tasks) => console.log(tasks)}
       />
-      <div className="border-2 ">
-        <h3 className="font-indie text-2xl font-bold">Add New Task</h3>
-        <div className="p-2 border rounded flex flex-row gap-2 justify-between flex-wrap">
-          <div className="flex flex-col">
-            <label htmlFor="name" className="font-indie test-2xl font-bold">
-              Task Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={newTask.name}
-              onChange={handleInputChange}
-              placeholder="Task Name"
-              className="p-2 border rounded"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label
-              htmlFor="start_date"
-              className="font-indie test-2xl font-bold"
-            >
-              Start Date
-            </label>
-            <input
-              type="date"
-              name="start_date"
-              value={newTask.start_date}
-              onChange={handleInputChange}
-              className="p-2 border rounded"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="end_date" className="font-indie test-2xl font-bold">
-              End Date
-            </label>
-            <input
-              type="date"
-              name="end_date"
-              value={newTask.end_date}
-              onChange={handleInputChange}
-              className="p-2 border rounded"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="progress" className="font-indie test-2xl font-bold">
-              Progress ( 1 - 100 )
-            </label>
-            <input
-              type="number"
-              name="progress"
-              value={newTask.progress === 0 ? ' ' : newTask.progress}
-              onChange={handleInputChange}
-              className="p-2 border rounded"
-              placeholder="0"
-            />
-          </div>
 
-          <div className="mt-6 ">
-            <button
-              onClick={handleAddTask}
-              className="p-2 bg-green-500 text-white rounded font-indie text-xl font-bold mr-20"
-            >
-              Add Task
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="mt-4">
-        <h3 className=" font-bold mb-2 font-indie text-2xl">Tasks List</h3>
-        <div className="grid grid-cols-1 gap-4">
-          {tasks.map((task) => (
-            <div
-              key={task._id}
-              className="p-2 border rounded flex flex-row gap-2 justify-between flex-wrap"
-            >
-              <input
-                type="text"
-                name="name"
-                value={taskToUpdate[task._id]?.name || task.name}
-                onChange={(e) => handleTaskUpdateInputChange(task._id, e)}
-                placeholder="Task Name"
-                className="p-2 border rounded"
-              />
-              <input
-                type="date"
-                name="start_date"
-                value={taskToUpdate[task._id]?.start_date || task.start}
-                onChange={(e) => handleTaskUpdateInputChange(task._id, e)}
-                className="p-2 border rounded"
-              />
-              <input
-                type="date"
-                name="end_date"
-                value={taskToUpdate[task._id]?.end_date || task.end}
-                onChange={(e) => handleTaskUpdateInputChange(task._id, e)}
-                className="p-2 border rounded"
-              />
-              <input
-                type="number"
-                name="progress"
-                value={taskToUpdate[task._id]?.progress || task.progress}
-                onChange={(e) => handleTaskUpdateInputChange(task._id, e)}
-                className="p-2 border rounded"
-              />
+      <GanttAddTask
+        newTask={newTask}
+        handleInputChange={handleInputChange}
+        handleAddTask={handleAddTask}
+      />
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleTaskUpdate(task._id)}
-                  className="p-2 bg-green-500 text-white rounded font-indie text-xl font-bold"
-                >
-                  Update
-                </button>
-                <button
-                  onClick={() => handleDeleteTask(task._id)}
-                  className="p-2 bg-red-500 text-white rounded font-indie text-xl font-bold"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <GanttTaskList
+        handleTaskUpdate={handleTaskUpdate}
+        handleDeleteTask={handleDeleteTask}
+        handleTaskUpdateInputChange={handleTaskUpdateInputChange}
+        tasks={tasks}
+        taskToUpdate={taskToUpdate}
+      />
     </div>
   );
 };
